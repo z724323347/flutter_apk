@@ -1,0 +1,50 @@
+group 'com.flutter.plugin.app.flutter_download'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    ext.kotlin_version = '1.2.71'
+    repositories {
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.2.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 28
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+    defaultConfig {
+        minSdkVersion 16
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.qianwen:update-app:3.5.2'
+    implementation 'com.azhon:appupdateX:2.1.0'
+    implementation 'com.qianwen:okhttp-utils:3.8.0'
+    implementation 'com.google.code.gson:gson:2.8.4'
+    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'com.afollestad.material-dialogs:commons:0.9.6.0'
+}
