@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -89,6 +91,10 @@ public class FlutterDownloadPlugin implements PluginRegistry.ActivityResultListe
             case ChannelConfig.CHANNEL_CHECK_PUSH:
                 checkPushStatus(result);
                 break;
+
+            case ChannelConfig.CHANNEL_GOSYSSETTING:
+                goSysSetting();
+                break;
         }
     }
 
@@ -152,6 +158,28 @@ public class FlutterDownloadPlugin implements PluginRegistry.ActivityResultListe
         result.success(status);
     }
 
+    /**
+     * 系统设置
+     */
+    private void goSysSetting() {
+        Intent intent = new Intent();
+        if (Build.VERSION.SDK_INT >= 26) {
+            // android 8.0引导
+            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+            intent.putExtra("android.provider.extra.APP_PACKAGE", mContext.getPackageName());
+        } else if (Build.VERSION.SDK_INT >= 21) {
+            // android 5.0-7.0
+            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+            intent.putExtra("app_package", mContext.getPackageName());
+            intent.putExtra("app_uid", mContext.getApplicationInfo().uid);
+        } else {
+            // 其他
+            intent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+            intent.setData(Uri.fromParts("package", mContext.getPackageName(), null));
+        }
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        activity.startActivity(intent);
+    }
 
     @Override
     public void onListen(Object o, EventChannel.EventSink eventSink) {

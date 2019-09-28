@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class FlutterDownload {
   static const MethodChannel _channel =
@@ -36,5 +37,16 @@ class FlutterDownload {
     print('checkPushStatus');
     bool state = await _channel.invokeMethod('check_push');
     return state;
+  }
+
+  // 进入推送系统设置
+  static Future<void> goSysSetting() async {
+     print('goSysSetting');
+     await _channel.invokeMethod('goSysSetting');
+  }
+
+  //插件方式
+  static Future<void> pluginGotoSys() async {
+    await PermissionHandler().openAppSettings();
   }
 }
