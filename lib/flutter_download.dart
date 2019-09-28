@@ -23,25 +23,12 @@ class FlutterDownload {
   }
 
   // flutter_download
-  static Future<Map> flutterDownload(Map map) async {
+  static Future<StreamSubscription> flutterDownload(Map map) async {
     print('flutterDownload');
     assert(map != null);
-    Map eventMap = {};
-    StreamController streamController = StreamController.broadcast();
-
-    _eventChannel.receiveBroadcastStream(map).listen((Object event) {
-      eventMap = event;
-      print('eventMap 1------------- $eventMap');
-      // return Future.value(eventMap);
-      streamController.close();
-      //  return eventMap;
+    return _eventChannel.receiveBroadcastStream(map).listen((Object event) {
+      // print('eventMap 1------------- $event');
     }, onError: (Object error) {});
-
-    await streamController.stream.drain();
-
-    // }]);
-    print('eventMap 2------------- $eventMap');
-    return eventMap;
   }
 
   // push_check
