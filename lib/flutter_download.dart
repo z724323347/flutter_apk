@@ -8,7 +8,7 @@ class FlutterDownload {
   static const EventChannel _eventChannel =
       const EventChannel('event.native.flutter.io/flutter_download');
 
-  //
+  // app 静默下载
   static Future<String> onlyApkDownload(Map map) async {
     print('onlyApkDownload');
     assert(map != null);
@@ -22,6 +22,7 @@ class FlutterDownload {
     return _channel.invokeMethod('apk_download', map);
   }
 
+  // flutter_download
   static Future<Map> flutterDownload(Map map) async {
     print('flutterDownload');
     assert(map != null);
@@ -33,7 +34,7 @@ class FlutterDownload {
       print('eventMap 1------------- $eventMap');
       // return Future.value(eventMap);
       streamController.close();
-    //  return eventMap;
+      //  return eventMap;
     }, onError: (Object error) {});
 
     await streamController.stream.drain();
@@ -41,5 +42,12 @@ class FlutterDownload {
     // }]);
     print('eventMap 2------------- $eventMap');
     return eventMap;
+  }
+
+  // push_check
+  static Future<bool> checkPushStatus() async {
+    print('checkPushStatus');
+    bool state = await _channel.invokeMethod('check_push');
+    return state;
   }
 }

@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -34,6 +35,7 @@ import io.flutter.plugin.common.PluginRegistry;
 
 public class FlutterDownloadPlugin implements PluginRegistry.ActivityResultListener, MethodChannel.MethodCallHandler, EventChannel.StreamHandler {
 
+    static final String TAG = FlutterDownloadPlugin.class.getName();
     static MethodChannel channel;
     static EventChannel eventChannel;
 
@@ -79,57 +81,77 @@ public class FlutterDownloadPlugin implements PluginRegistry.ActivityResultListe
     @Override
     public void onMethodCall(MethodCall methodCall, final MethodChannel.Result result) {
         this.result = result;
-        if (methodCall.method.equals(ChannelConfig.CHANNEL_ONLYDOWN)){
-            String apkUrl = methodCall.argument("url");
-            String msg = methodCall.argument("msg");
-            Gson gson = new Gson();
-            appInfo = gson.fromJson(msg,AppInfo.class);
-            final UpdateAppBean updateAppBean = new UpdateAppBean();
-            updateAppBean.setApkFileUrl(apkUrl);
+        switch (methodCall.method) {
+            case  ChannelConfig.CHANNEL_ONLYDOWN:
+                onlyDownloadApk(methodCall,result);
+                break;
 
-            //设置apk 的保存路径
-            updateAppBean.setTargetPath(apkPath());
-            //实现网络接口，只实现下载就可以
-            updateAppBean.setHttpManager(new UpdateAppHttpUtil());
-            UpdateAppManager.download(activity, updateAppBean, new DownloadService.DownloadCallback() {
-                @Override
-                public void onStart() {
-                    result.success("progress :onStart");
-                }
-
-                @Override
-                public void onProgress(float progress, long totalSize) {
-                    Log.e("TAG", "progress __ "+ progress  + "     totalSize " +totalSize);
-//                    Message msg = new Message();
-//                    msg.arg1 = (int) progress;
-//                    methodHandler.sendMessage(msg);
-//                    result.success("progress :");
-                }
-
-                @Override
-                public void setMax(long totalSize) {
-
-                }
-
-                @Override
-                public boolean onFinish(File file) {
-//                    result.success("progress :file " + file.getPath());
-                    showSilenceDiyDialog(updateAppBean,appInfo,file);
-                    return true;
-                }
-
-                @Override
-                public void onError(String msg) {
-                    result.success("onError : " +msg);
-                }
-
-                @Override
-                public boolean onInstallAppAndAppOnForeground(File file) {
-                    return false;
-                }
-            });
+            case ChannelConfig.CHANNEL_CHECK_PUSH:
+                checkPushStatus(result);
+                break;
         }
     }
+
+    /**
+     * APP 仅下载更新
+     * @param methodCall
+     * @param result
+     */
+    private void onlyDownloadApk(final MethodCall methodCall, final MethodChannel.Result result) {
+        String apkUrl = methodCall.argument("url");
+        String msg = methodCall.argument("msg");
+        Gson gson = new Gson();
+        appInfo = gson.fromJson(msg,AppInfo.class);
+        final UpdateAppBean updateAppBean = new UpdateAppBean();
+        updateAppBean.setApkFileUrl(apkUrl);
+
+        //设置apk 的保存路径
+        updateAppBean.setTargetPath(apkPath());
+        //实现网络接口，只实现下载就可以
+        updateAppBean.setHttpManager(new UpdateAppHttpUtil());
+        UpdateAppManager.download(activity, updateAppBean, new DownloadService.DownloadCallback() {
+            @Override
+            public void onStart() {
+                result.success("progress :onStart");
+            }
+
+            @Override
+            public void onProgress(float progress, long totalSize) {
+                Log.e(TAG, "progress __ "+ progress  + "     totalSize " +totalSize);
+            }
+            @Override
+            public void setMax(long totalSize) {}
+            @Override
+            public boolean onFinish(File file) {
+                showSilenceDiyDialog(updateAppBean,appInfo,file);
+                return true;
+            }
+            @Override
+            public void onError(String msg) {
+                result.success("onError : " +msg);
+            }
+            @Override
+            public boolean onInstallAppAndAppOnForeground(File file) {
+                return false;
+            }
+        });
+
+    }
+
+    /**
+     * push status 检查
+     * @param result
+     */
+    private void checkPushStatus(final MethodChannel.Result result) {
+        boolean status = false;
+        try {
+            status = NotificationManagerCompat.from(activity).areNotificationsEnabled();
+            Log.d(TAG,"" + status);
+        }catch (Exception e){
+        }
+        result.success(status);
+    }
+
 
     @Override
     public void onListen(Object o, EventChannel.EventSink eventSink) {
@@ -279,7 +301,7 @@ public class FlutterDownloadPlugin implements PluginRegistry.ActivityResultListe
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         switch (which) {
                             case POSITIVE:
-                                Log.e("TAG","AppUpdateUtils.installApp(activity, appFile)");
+                                Log.e(TAG,"AppUpdateUtils.installApp(activity, appFile)");
                                 AppUpdateUtils.installApp(activity, appFile);
                                 dialog.dismiss();
                                 break;
