@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
@@ -94,6 +95,11 @@ public class FlutterDownloadPlugin implements PluginRegistry.ActivityResultListe
 
             case ChannelConfig.CHANNEL_GOSYSSETTING:
                 goSysSetting();
+                break;
+
+            case ChannelConfig.CHANNEL_SCREEN_LIGHT:
+                boolean isLight = methodCall.argument("isLight");
+                openWakeLock(isLight);
                 break;
         }
     }
@@ -179,6 +185,18 @@ public class FlutterDownloadPlugin implements PluginRegistry.ActivityResultListe
         }
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         activity.startActivity(intent);
+    }
+
+    /**
+     * 屏幕常亮设置
+     * @param isLight
+     */
+    private void openWakeLock(boolean isLight) {
+        if (isLight){
+            activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        } else {
+            activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
     }
 
     @Override

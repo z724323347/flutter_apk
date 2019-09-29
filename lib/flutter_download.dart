@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ffi';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -41,12 +42,19 @@ class FlutterDownload {
 
   // 进入推送系统设置
   static Future<void> goSysSetting() async {
-     print('goSysSetting');
-     await _channel.invokeMethod('goSysSetting');
+    print('goSysSetting');
+    await _channel.invokeMethod('goSysSetting');
   }
 
   //插件方式
   static Future<void> pluginGotoSys() async {
     await PermissionHandler().openAppSettings();
+  }
+
+  /// 手机屏幕常亮  设置为常亮:true  ，取消常亮: false
+  static Future<void> screenLongLight(bool isLight) async {
+    assert(isLight != null);
+    Map map = {'isLight': isLight};
+    await _channel.invokeMethod('long_light', map);
   }
 }

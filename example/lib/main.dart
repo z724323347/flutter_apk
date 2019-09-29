@@ -36,6 +36,7 @@ class _MyAppState extends State<MyApp> {
           resultMap = event;
           _platformVersion = '文件大小 :${resultMap['max'].toString()}' +
               '\n 当前下载进度${resultMap['progress'].toString()}';
+          resultMap['max'] = resultMap['progress'] ? strem.cancel() : null;
         });
       });
     } on PlatformException {
@@ -69,100 +70,129 @@ class _MyAppState extends State<MyApp> {
     await FlutterDownload.pluginGotoSys();
   }
 
+  Future<void> wakeLock(bool isLight) async {
+    await FlutterDownload.screenLongLight(isLight);
+  } 
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              color: Colors.grey,
-              width: 400,
-              height: 150,
-              child: Column(
-                children: <Widget>[
-                  OutlineButton(
-                    onPressed: () {
-                      flutterLoading();
-                    },
-                    child: Text('Flutter 获取下载进度'),
+          appBar: AppBar(
+            title: const Text('Plugin example app'),
+          ),
+          body: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  color: Colors.white,
+                  width: 400,
+                  height: 150,
+                  child: Column(
+                    children: <Widget>[
+                      OutlineButton(
+                        onPressed: () {
+                          flutterLoading();
+                        },
+                        child: Text('Flutter 获取下载进度'),
+                      ),
+                      Text(' \n$_platformVersion\n')
+                    ],
                   ),
-                  Text(' \n$_platformVersion\n')
-                ],
-              ),
-            ),
-            Container(
-              color: Colors.white,
-              width: 400,
-              height: 150,
-              child: Column(
-                children: <Widget>[
-                  OutlineButton(
-                    onPressed: () {
-                      onlyDownload();
-                    },
-                    child: Text('Flutter only下载'),
+                ),
+                Container(
+                  color: Colors.white,
+                  width: 400,
+                  height: 100,
+                  child: Column(
+                    children: <Widget>[
+                      OutlineButton(
+                        onPressed: () {
+                          onlyDownload();
+                        },
+                        child: Text('Flutter only下载'),
+                      ),
+                      Text(' \n$_loadingString\n')
+                    ],
                   ),
-                  Text(' \n$_loadingString\n')
-                ],
-              ),
-            ),
-            Container(
-              color: Colors.grey,
-              width: 400,
-              height: 150,
-              child: Column(
-                children: <Widget>[
-                  OutlineButton(
-                    onPressed: () {
-                      pushStatus();
-                    },
-                    child: Text('Flutter 获取推送状态'),
+                ),
+                Container(
+                  color: Colors.white,
+                  width: 400,
+                  height: 100,
+                  child: Column(
+                    children: <Widget>[
+                      OutlineButton(
+                        onPressed: () {
+                          pushStatus();
+                        },
+                        child: Text('Flutter 获取推送状态'),
+                      ),
+                      Text(' \n$_pushState\n')
+                    ],
                   ),
-                  Text(' \n$_pushState\n')
-                ],
-              ),
-            ),
-            Container(
-              color: Colors.white,
-              width: 400,
-              height: 150,
-              child: Column(
-                children: <Widget>[
-                  OutlineButton(
-                    onPressed: () {
-                      gotoSys();
-                    },
-                    child: Text('Flutter 进入系统设置'),
+                ),
+                Container(
+                  color: Colors.white,
+                  width: 400,
+                  child: Column(
+                    children: <Widget>[
+                      OutlineButton(
+                        onPressed: () {
+                          gotoSys();
+                        },
+                        child: Text('Flutter 进入系统设置'),
+                      ),
+                    ],
                   ),
-                  Text(' \n\n')
-                ],
-              ),
-            ),
-            Container(
-              color: Colors.grey,
-              width: 400,
-              height: 150,
-              child: Column(
-                children: <Widget>[
-                  OutlineButton(
-                    onPressed: () {
-                      otherGoto();
-                    },
-                    child: Text('由其他插件 进入系统设置'),
+                ),
+                Container(
+                  color: Colors.white,
+                  width: 400,
+                  child: Column(
+                    children: <Widget>[
+                      OutlineButton(
+                        onPressed: () {
+                          otherGoto();
+                        },
+                        child: Text('由其他插件 进入系统设置'),
+                      ),
+                    ],
                   ),
-                  Text(' \n\n')
-                ],
-              ),
+                ),
+                Container(
+                  color: Colors.white,
+                  width: 400,
+                  child: Column(
+                    children: <Widget>[
+                      OutlineButton(
+                        onPressed: () {
+                          wakeLock(true);
+                        },
+                        child: Text('打开屏幕常亮'),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  color: Colors.white,
+                  width: 400,
+                  child: Column(
+                    children: <Widget>[
+                      OutlineButton(
+                        onPressed: () {
+                          wakeLock(false);
+                        },
+                        child: Text('关闭屏幕常亮'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          )),
     );
   }
 }
