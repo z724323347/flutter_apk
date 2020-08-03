@@ -11,8 +11,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # Android 权限插件
-  permission_handler: ^3.2.2
 
 dev_dependencies:
   flutter_test:

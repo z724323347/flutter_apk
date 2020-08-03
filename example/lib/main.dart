@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> {
           resultMap = event;
           _platformVersion = '文件大小 :${resultMap['max'].toString()}' +
               '\n 当前下载进度${resultMap['progress'].toString()}';
-          resultMap['max'] = resultMap['progress'] ? strem.cancel() : null;
+          resultMap['max'] == resultMap['progress'] ? strem.cancel() : null;
         });
       });
     } on PlatformException {
@@ -67,12 +67,12 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> otherGoto() async {
-    await FlutterDownload.pluginGotoSys();
+    // await FlutterDownload.pluginGotoSys();
   }
 
   Future<void> wakeLock(bool isLight) async {
     await FlutterDownload.screenLongLight(isLight);
-  } 
+  }
 
   @override
   Widget build(BuildContext context) {
